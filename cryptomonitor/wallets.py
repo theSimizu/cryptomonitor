@@ -57,7 +57,7 @@ class Wallet:
 
 
     
-wallet = Wallet().get_wallet_by_name('Electrum')
+# wallet = Wallet().get_wallet_by_name('Electrum')
 
     
 if __name__ == '__main__':

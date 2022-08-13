@@ -82,4 +82,6 @@ Base.metadata.create_all(engine) #Create the database and tables
 
 
 if __name__ == '__main__':
-    pass
+    wallet = session.query(Wallets).filter_by(name='Trezor').first()
+
+    print(tuple(wallet.sum_coins()))
