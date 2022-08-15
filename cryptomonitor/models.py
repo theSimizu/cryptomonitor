@@ -72,6 +72,10 @@ class Wallets(Base):
         session.query(CryptoCurrencies).filter(CryptoCurrencies.wallet_id == self.id).delete(synchronize_session=False)
         session.commit()
 
+    def coin_transactions(self, coin):
+        return tuple(filter(lambda x: coin.lower() in (x.name.lower(), x.cg_id.lower()), self.coins))
+        
+
 
 def get_wallets():
     print(session.query(Wallets).all())
@@ -83,5 +87,5 @@ Base.metadata.create_all(engine) #Create the database and tables
 
 if __name__ == '__main__':
     wallet = session.query(Wallets).filter_by(name='Trezor').first()
-
-    print(tuple(wallet.sum_coins()))
+    wallet.coin_transactions('bitcoin')
+    # print(tuple(wallet.sum_coins()))

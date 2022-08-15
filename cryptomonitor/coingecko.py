@@ -70,7 +70,7 @@ class CoinGecko:
     def get_coins_info_from_wallet(self, wallet):
         with open('coins_list.json', 'r') as file:
             cp = wallet.sum_coins()
-            cg_data = json.loads(file.read())
+            cg_data = json.load(file)
             coins = [
                 {
                     'name': coin['name'],
@@ -86,8 +86,17 @@ class CoinGecko:
 
             return coins
 
+    def coin_name_to_cg_id(self, coin_name):
+        with open('coins_list.json', 'r') as file:
+            cg_data = json.load(file)
+            coin = tuple(filter(lambda x: x['name'] == coin_name, cg_data))[0]
+            return coin['id']
 
-
+    # def coin_cg_id_to_name(self, coin_id):
+    #     with open('coins_list.json', 'r') as file:
+    #         cg_data = json.load(file)
+    #         coin = tuple(filter(lambda x: x['id'] == coin_id, cg_data))[0]
+    #         return coin['name']
 
 if __name__ == '__main__':
     cg = CoinGecko()

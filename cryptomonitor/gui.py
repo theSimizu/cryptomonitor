@@ -1,25 +1,27 @@
-import tkinter as tk
 import json
+import tkinter as tk
 import numpy as np
-from tkinter import ACTIVE, ANCHOR, SINGLE, Label, ttk
-from .wallets import Wallet
+from cryptomonitor.coingecko import CoinGecko
+from cryptomonitor.profit_window import ProfitWindow, coins_name_key, coins_id_key, cg
+from tkinter import ANCHOR, Label, ttk
+from cryptomonitor.wallets import Wallet
 
 
 ############################################ VARIABLES #############################################
+
+
+# cg.update_coins_list()
+
 wallets = Wallet().get_all_wallets()
-cur_wallet = None
-row = 0
-f = open('coins_list.json', 'r')
-coin_json = json.load(f)
-f.close()
-coins_id_key = {coin['id']: coin for coin in coin_json}
-coins_name_key = {coin['name']: coin for coin in coin_json}
-
-
 wallets_names = list(wallet.name for wallet in wallets)
-test = [x for x in range(100)]
+
+cur_wallet = None
+
+
+
 columns = ('coin', 'amount', 'value', 'total')
 
+row = 0
 wallet_lb_row = None
 coin_lb_row = None
 
@@ -36,8 +38,7 @@ def _add_errors(coin, amount, value, transaction):
 
     Label(text=err, fg='red').grid(row=error_row, column=0, columnspan=2, sticky='new')
 
-    if err: 
-        return 1
+    if err: return 1
 
 def _check_entry(event, lst, lst_box):
     value = event.widget.get()
@@ -60,10 +61,10 @@ def hide_listboxes(event):
         wallets_listbox.grid_remove()
         coins_listbox.grid_remove()
 
-def show_wallets(_):
+def show_wallets_listbox(_):
     wallets_listbox.grid(row=wallet_lb_row, column=1,columnspan=1, sticky='new', padx=0, pady=(0, 0))
 
-def show_coins(_):
+def show_coins_listbox(_):
     coins_listbox.grid(row=coin_lb_row, column=0, columnspan=2, sticky='nw', padx=(50, 0), pady=0)
 
 def check_wallet_entry(event):
@@ -74,20 +75,24 @@ def check_coin_entry(event):
 
 def fill_wallet_items_tree_view(_):
     global cur_wallet
-    _fill_entry(wallets_listbox, wallets_entry)    
+    _fill_entry(wallets_listbox, wallets_entry)
+
     for item in old_transactions_tree_view.get_children(): old_transactions_tree_view.delete(item)
+
     wn = wallets_entry.get()
-    selected_wallet = tuple(filter(lambda x: x.name == wn, wallets))[0]
-    cur_wallet = selected_wallet
-    coins = tuple(selected_wallet.sum_coins())
+    cur_wallet = tuple(filter(lambda x: x.name == wn, wallets))[0]
+    coins = list(cur_wallet.sum_coins())
+    coins = sorted(coins, key=lambda x: x[1]*coins_id_key[x[0]]['current_price'], reverse=True)
     for coin in coins: 
-        value = coins_id_key[coin[0]]['current_price']
-        old_transactions_tree_view.insert('', 'end',text="8",values=(
-                                                                        coins_id_key[coin[0]]['name'], 
-                                                                        str(f'{coin[1]:.8f}'), 
-                                                                        str(f'{value:.2f}'), 
-                                                                        str(f'{coin[1]*value:.2f}')
-                                                                    )
+        coin_id = coin[0]
+        value = coins_id_key[coin_id]['current_price']
+        old_transactions_tree_view.insert('', 'end',
+                                        values=(
+                                            coins_id_key[coin_id]['name'], 
+                                            str(f'{coin[1]:.8f}'), 
+                                            str(f'{value:.2f}'), 
+                                            str(f'{coin[1]*value:.2f}')
+                                        )
         )
 
     wallets_listbox.grid_remove()
@@ -97,7 +102,6 @@ def fill_coin_items_tree_view(_):
     value_entry.delete(0, 'end')
     value_entry.insert(0, _sn_format(coins_name_key[val]['current_price']))
     coins_listbox.grid_remove()
-
 
 def color_radio_button():
     if var_transaction.get() == 1:
@@ -112,24 +116,23 @@ def color_radio_button():
         buy_radio['bg'] = '#999999'
         buy_radio['activebackground'] = '#999999'
     
-
-
-
 def add_to_treeview(_):
     coin = coins_entry.get()
     amount = amount_entry.get()
     value = value_entry.get()
+
     if _add_errors(coin, amount, value, var_transaction.get()): return
+
     coins_entry.delete(0, 'end')
     amount_entry.delete(0, 'end')
     value_entry.delete(0, 'end')
 
     if var_transaction.get() == 1: tag = 'buy'
     if var_transaction.get() == 2: tag = 'sell'
+
     new_transactions_tree_view.tag_configure("buy",background='green',foreground='white')
     new_transactions_tree_view.tag_configure("sell",background='red',foreground='white')
     new_transactions_tree_view.insert('', 'end',text="8",values=(coin, amount, value), tags=[tag])
-
 
 def save_transactions(_):
     global cur_wallet
@@ -138,28 +141,31 @@ def save_transactions(_):
     for item in items:
         coin = new_transactions_tree_view.item(item)['values']
         transaction = new_transactions_tree_view.item(item)['tags'][0]
-        coin_name = coin[0]
-        coin_symbol = coins_name_key[coin_name]['symbol']
-        coin_buy = transaction == 'buy'
-        coin_amount = coin[1]
-        coin_value = coin[2]
-        coin_wallet_id = cur_wallet.id
-        coin_cg_id = coins_name_key[coin_name]['id']
-        data = \
-            {
-                'name': coin_name,
-                'symbol': coin_symbol,
-                'buy': coin_buy,
-                'amount': coin_amount,
-                'value': coin_value,
-                'wallet_id': coin_wallet_id,
-                'cg_id': coin_cg_id,
-                'date': None
-            }
+        data = {}
+        data['name'] = coin[0]
+        data['symbol'] = coins_name_key[coin[0]]['symbol']
+        data['buy'] = transaction == 'buy'
+        data['amount'] = coin[1]
+        data['value'] = coin[2]
+        data['wallet_id'] = cur_wallet.id
+        data['cg_id'] = coins_name_key[coin[0]]['id']
+        data['date'] = None
         cur_wallet.add_coin(data)
     for item in new_transactions_tree_view.get_children(): new_transactions_tree_view.delete(item)
     fill_wallet_items_tree_view('')
 
+def coin_profit_data(_):
+    global cur_wallet
+
+    selection = old_transactions_tree_view.selection()
+    if not selection: return
+    values = old_transactions_tree_view.item(selection[0])['values']
+    coin = values[0]
+
+    pw = ProfitWindow(app, cur_wallet, coin)
+
+
+    
 
 ################################################ APP ################################################
 
@@ -182,7 +188,7 @@ select.grid(row=row, column=0, sticky='nsew', padx=0, pady=(15, 3))
 # Wallets Entry ===================================================================================
 wallets_entry = tk.Entry()
 wallets_entry.grid(row=row, column=1,columnspan=1, sticky='nsew', padx=0, pady=(15, 0))
-wallets_entry.bind('<Button-1>', show_wallets)
+wallets_entry.bind('<Button-1>', show_wallets_listbox)
 wallets_entry.bind('<KeyRelease>', check_wallet_entry)
 #===================================================================================================
 
@@ -229,6 +235,8 @@ old_transactions_tree_view.heading("total", text="Total($)")
 scrollbar = ttk.Scrollbar(orient=tk.VERTICAL, command=old_transactions_tree_view.yview)
 old_transactions_tree_view.configure(yscroll=scrollbar.set)
 scrollbar.grid(row=row, column=2, sticky='nsew', padx=(0, 50), pady=20)
+
+old_transactions_tree_view.bind('<Double-1>', coin_profit_data)
 #=========================================================================================================
 
 #++++++++++++++++++++++++++++++++++++++++++++++++++++ROW 3++++++++++++++++++++++++++++++++++++++++++++++++++++
@@ -300,7 +308,7 @@ row+=1
 coins_entry = ttk.Entry(width=28)
 coins_entry.grid(row=row, column=0, columnspan=2, sticky='nsw', padx=(50, 0), pady=0)
 coins_entry.bind('<KeyRelease>', check_coin_entry)
-coins_entry.bind('<Button-1>', show_coins)
+coins_entry.bind('<Button-1>', show_coins_listbox)
 #==================================================================================================================
 
 
@@ -354,10 +362,6 @@ new_transactions_tree_view.column("amount", anchor=tk.CENTER, stretch=tk.NO, wid
 new_transactions_tree_view.heading("amount", text="Quantidade")
 new_transactions_tree_view.column("value",anchor=tk.CENTER, stretch=tk.NO, width=200)
 new_transactions_tree_view.heading("value", text="Valor($)")
-
-
-# for c in range(15):
-#     new_transactions_tree_view.insert('', 'end',text="8",values=('BTC', '1', c))
 
 scrollbar = ttk.Scrollbar(orient=tk.VERTICAL, command=new_transactions_tree_view.yview)
 new_transactions_tree_view.configure(yscroll=scrollbar.set)
