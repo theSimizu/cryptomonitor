@@ -161,8 +161,9 @@ def coin_profit_data(_):
     if not selection: return
     values = old_transactions_tree_view.item(selection[0])['values']
     coin = values[0]
-
     pw = ProfitWindow(app, cur_wallet, coin)
+
+
 
 
     
