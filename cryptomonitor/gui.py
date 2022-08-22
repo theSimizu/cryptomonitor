@@ -1,9 +1,10 @@
 import json
 import tkinter as tk
 import numpy as np
-from cryptomonitor.coingecko import CoinGecko
-from cryptomonitor.profit_window import ProfitWindow, coins_name_key, coins_id_key, cg
-from tkinter import ANCHOR, Label, ttk
+import requests
+from datetime import datetime
+from cryptomonitor.profit_window import ProfitWindow, coins_name_key, coins_id_key, cg, cur_fiat, fiat_symbol, fiats
+from tkinter import ANCHOR, ttk
 from cryptomonitor.wallets import Wallet
 
 
@@ -36,7 +37,7 @@ def _add_errors(coin, amount, value, transaction):
     if coin not in coins_name_key.keys(): err = 'Moeda nao encontrada'
     if not transaction: err = 'Por favor, selecione um tipo de transacao'
 
-    Label(text=err, fg='red').grid(row=error_row, column=0, columnspan=2, sticky='new')
+    tk.Label(text=err, fg='red').grid(row=error_row, column=0, columnspan=2, sticky='new')
 
     if err: return 1
 
@@ -163,8 +164,14 @@ def coin_profit_data(_):
     coin = values[0]
     pw = ProfitWindow(app, cur_wallet, coin)
 
-
-
+def update_fiats():
+    param = tuple(f'usd-{f}' for f in fiats)
+    p = ','.join(param)
+    r = requests.get(f'https://economia.awesomeapi.com.br/json/last/{p}')
+    with open('fiats.json', 'w') as file:
+        data = r.json()
+        data['time'] = datetime.timestamp(datetime.utcnow())
+        json.dump(data, file)
 
     
 
@@ -182,8 +189,8 @@ app.geometry('850x850')
 
 
 # Select Label ===================================================================================
-select = tk.Label(text='Selecione uma carteira: ', borderwidth=2)
-select.grid(row=row, column=0, sticky='nsew', padx=0, pady=(15, 3))
+tk.Label(text='Selecione uma carteira: ', borderwidth=2)\
+.grid(row=row, column=0, sticky='nsew', padx=0, pady=(15, 3))
 #==================================================================================================
 
 # Wallets Entry ===================================================================================
@@ -204,10 +211,10 @@ wallet_lb_row = row
 # ListBox ===========================================================================================
 wallets_listbox = tk.Listbox(height=3)
 wallets_listbox.bind("<<ListboxSelect>>", fill_wallet_items_tree_view)
-for item in wallets_names:
-    wallets_listbox.insert('end', item)
+for name in wallets_names:
+    wallets_listbox.insert('end', name)
 
-space = Label(text='', height=4).grid(row=row, column=0, sticky='nsew', padx=0, pady=(0, 0)) # Just for space the row height
+tk.Label(text='', height=4).grid(row=row, column=0, sticky='nsew', padx=0, pady=(0, 0)) # Just for space the row height
 
 #=====================================================================================================
 
@@ -229,9 +236,9 @@ old_transactions_tree_view.heading("coin", text="Moeda")
 old_transactions_tree_view.column("amount", anchor=tk.CENTER, stretch=tk.NO, width=150)
 old_transactions_tree_view.heading("amount", text="Quantidade")
 old_transactions_tree_view.column("value",anchor=tk.CENTER, stretch=tk.NO, width=150)
-old_transactions_tree_view.heading("value", text="Valor($)")
+old_transactions_tree_view.heading("value", text=f"Valor({fiat_symbol})")
 old_transactions_tree_view.column("total", anchor=tk.CENTER, stretch=tk.NO, width=200)
-old_transactions_tree_view.heading("total", text="Total($)")
+old_transactions_tree_view.heading("total", text=f"Total({fiat_symbol})")
 
 scrollbar = ttk.Scrollbar(orient=tk.VERTICAL, command=old_transactions_tree_view.yview)
 old_transactions_tree_view.configure(yscroll=scrollbar.set)
@@ -245,8 +252,8 @@ old_transactions_tree_view.bind('<Double-1>', coin_profit_data)
 row+=1
 
 # Total ==================================================================================================
-total_label = tk.Label(text='Total: ')
-total_label.grid(row=row, column=1, sticky='nsew', padx=0, pady=0)
+tk.Label(text='Total: ')\
+.grid(row=row, column=1, sticky='nsew', padx=0, pady=0)
 #=========================================================================================================
 
 #++++++++++++++++++++++++++++++++++++++++++++++++++++ROW 4++++++++++++++++++++++++++++++++++++++++++++++++++++
@@ -291,14 +298,17 @@ sell_radio.grid(row=row, column=0, columnspan=2, sticky='nse', padx=(0, 125), pa
 row+=1
 
 # Labels =======================================================================================================
-coin_label = ttk.Label(text='Moeda: ', font=('Arial', 13))
-coin_label.grid(row=row, column=0, columnspan=2, sticky='nsw', padx=(50, 0), pady=0)
+tk.Label(text='Moeda: ', font=('Arial', 13))\
+.grid(row=row, column=0, columnspan=2, sticky='nsw', padx=(50, 0), pady=0)
 
-amount_label = ttk.Label(text='Quantidade: ', font=('Arial', 13))
-amount_label.grid(row=row, column=0, columnspan=2, sticky='ns', padx=(0, 65), pady=0)
+tk.Label(text='Par: ', font=('Arial', 13))\
+.grid(row=row, column=0, columnspan=1, sticky='ns', padx=(70, 0), pady=0)
 
-value_label = ttk.Label(text='Valor: ', font=('Arial', 13))
-value_label.grid(row=row, column=0, columnspan=2, sticky='nse', padx=(0, 170), pady=0)
+tk.Label(text='Quantidade: ', font=('Arial', 13))\
+.grid(row=row, column=0, columnspan=2, sticky='ns', padx=(0, 65), pady=0)
+
+tk.Label(text='Valor: ', font=('Arial', 13))\
+.grid(row=row, column=0, columnspan=2, sticky='nse', padx=(0, 170), pady=0)
 #================================================================================================================
 
 #++++++++++++++++++++++++++++++++++++++++++++++++++++ROW 7++++++++++++++++++++++++++++++++++++++++++++++++++++
@@ -306,10 +316,18 @@ value_label.grid(row=row, column=0, columnspan=2, sticky='nse', padx=(0, 170), p
 row+=1
 
 # Coin name entry ================================================================================================
-coins_entry = ttk.Entry(width=28)
+coins_entry = ttk.Entry(width=20)
 coins_entry.grid(row=row, column=0, columnspan=2, sticky='nsw', padx=(50, 0), pady=0)
 coins_entry.bind('<KeyRelease>', check_coin_entry)
 coins_entry.bind('<Button-1>', show_coins_listbox)
+#==================================================================================================================
+
+# Coin name entry ================================================================================================
+pair = ttk.Combobox(values=fiats, width=8, state="readonly") #ttk.Entry(width=8)
+pair.current(0)
+pair.grid(row=row, column=0, columnspan=1, sticky='ns', padx=(100, 0), pady=0)
+# pair.bind('<KeyRelease>', check_coin_entry)
+# pair.bind('<Button-1>', show_coins_listbox)
 #==================================================================================================================
 
 
@@ -334,10 +352,12 @@ coin_lb_row = row
 # Coins listbox =====================================================================================================
 coins_listbox = tk.Listbox(height=4, width=28)
 coins_listbox.bind("<<ListboxSelect>>", fill_coin_items_tree_view)
-for item in coins_name_key:
-    coins_listbox.insert('end', item)
+for name in coins_name_key:
+    coins_listbox.insert('end', name)
 
-space = Label(text='', height=5).grid(row=row, column=2, sticky='nsew', padx=0, pady=(0, 0))
+
+
+tk.Label(text='', height=5).grid(row=row, column=2, sticky='nsew', padx=0, pady=(0, 0))
 #===================================================================================================================
 
 # Button ===========================================================================================================
@@ -348,7 +368,7 @@ add_button.bind('<Button-1>', add_to_treeview)
 row+=1
 error_row = row
 
-space = Label(text='', height=1).grid(row=row, column=2, sticky='nsew', padx=0, pady=(0, 15))
+tk.Label(text='', height=1).grid(row=row, column=2, sticky='nsew', padx=0, pady=(0, 15))
 
 #++++++++++++++++++++++++++++++++++++++++++++++++++++ROW 9++++++++++++++++++++++++++++++++++++++++++++++++++++
 #                                           New transaction treeview
@@ -362,7 +382,7 @@ new_transactions_tree_view.heading("coin", text="Moeda")
 new_transactions_tree_view.column("amount", anchor=tk.CENTER, stretch=tk.NO, width=275)
 new_transactions_tree_view.heading("amount", text="Quantidade")
 new_transactions_tree_view.column("value",anchor=tk.CENTER, stretch=tk.NO, width=200)
-new_transactions_tree_view.heading("value", text="Valor($)")
+new_transactions_tree_view.heading("value", text=f"Valor({fiat_symbol})")
 
 scrollbar = ttk.Scrollbar(orient=tk.VERTICAL, command=new_transactions_tree_view.yview)
 new_transactions_tree_view.configure(yscroll=scrollbar.set)
@@ -379,12 +399,19 @@ row+=1
 save_button = ttk.Button(text='Salvar')
 save_button.grid(row=row, column=1, sticky='nsew', padx=0, pady=(10, 50))
 save_button.bind('<Button-1>', save_transactions)
-#===================================================================================================================
+#====================================================================================================================
 
-#++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+#+++++++++++++++++++++++++++++++++++++++++++++++++++++ROW 11++++++++++++++++++++++++++++++++++++++++++++++++++++
+row+=1
+# fiat_entry = tk.Entry(width=10, justify='center')
+# fiat_entry.insert(0, cur_fiat)
+fiat_entry = ttk.Combobox(values=fiats, width=8, state="readonly")
+fiat_entry.grid(row=row, column=0, sticky='nsw', padx=(50, 0), pady=0)
+fiat_entry.current(0)
+
+
 
 app.bind("<Button-1>", hide_listboxes)
-
 app.grid_columnconfigure(0, weight=1, pad=15)
 app.grid_columnconfigure(1, weight=1, pad=15)
 

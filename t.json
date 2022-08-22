@@ -1,0 +1,590 @@
+{
+    "AED": {
+        "name": "Dirham",
+        "code": "د.إ"
+    },
+    "AFN": {
+        "name": "Afegão",
+        "code": "Af"
+    },
+    "ALL": {
+        "name": "Lek",
+        "code": "L"
+    },
+    "AMD": {
+        "name": "Dracma",
+        "code": "Դ"
+    },
+    "AOA": {
+        "name": "Kwanza",
+        "code": "Kz"
+    },
+    "ARS": {
+        "name": "Peso",
+        "code": "$"
+    },
+    "AUD": {
+        "name": "Dólar",
+        "code": "$"
+    },
+    "AWG": {
+        "name": "Florin",
+        "code": "ƒ"
+    },
+    "AZN": {
+        "name": "Manat",
+        "code": "ман"
+    },
+    "BAM": {
+        "name": "Konvertibilna",
+        "code": "КМ"
+    },
+    "BBD": {
+        "name": "Dólar",
+        "code": "$"
+    },
+    "BDT": {
+        "name": "Taka",
+        "code": "৳"
+    },
+    "BGN": {
+        "name": "Lev",
+        "code": "лв"
+    },
+    "BHD": {
+        "name": "Dinar",
+        "code": "ب.د"
+    },
+    "BIF": {
+        "name": "Franco",
+        "code": "₣"
+    },
+    "BMD": {
+        "name": "Dólar",
+        "code": "$"
+    },
+    "BND": {
+        "name": "Dólar",
+        "code": "$"
+    },
+    "BOB": {
+        "name": "Boliviano",
+        "code": "Bs."
+    },
+    "BRL": {
+        "name": "Real",
+        "code": "R$"
+    },
+    "BSD": {
+        "name": "Dólar",
+        "code": "$"
+    },
+    "BYN": {
+        "name": "Rublo",
+        "code": "Br"
+    },
+    "BZD": {
+        "name": "Dólar",
+        "code": "$"
+    },
+    "CAD": {
+        "name": "Dólar",
+        "code": "$"
+    },
+    "CDF": {
+        "name": "Franco",
+        "code": "₣"
+    },
+    "CHF": {
+        "name": "Franco",
+        "code": "₣"
+    },
+    "CLP": {
+        "name": "Peso",
+        "code": "$"
+    },
+    "CNY": {
+        "name": "Yuan",
+        "code": "¥"
+    },
+    "COP": {
+        "name": "Peso",
+        "code": "$"
+    },
+    "CRC": {
+        "name": "Colon",
+        "code": "₡"
+    },
+    "CUP": {
+        "name": "Peso",
+        "code": "$"
+    },
+    "CVE": {
+        "name": "Escudo",
+        "code": "$"
+    },
+    "CZK": {
+        "name": "Coroa",
+        "code": "Kč"
+    },
+    "DJF": {
+        "name": "Franco",
+        "code": "₣"
+    },
+    "DKK": {
+        "name": "Coroa",
+        "code": "kr"
+    },
+    "DOP": {
+        "name": "Peso",
+        "code": "$"
+    },
+    "DZD": {
+        "name": "Dinar",
+        "code": "د.ج"
+    },
+    "EGP": {
+        "name": "Libra",
+        "code": "£"
+    },
+    "ERN": {
+        "name": "Nakfa",
+        "code": "Nfk"
+    },
+    "ETB": {
+        "name": "Etíope",
+        "code": "230"
+    },
+    "EUR": {
+        "name": "Euro",
+        "code": "€"
+    },
+    "FJD": {
+        "name": "Dólar",
+        "code": "$"
+    },
+    "FKP": {
+        "name": "Libra",
+        "code": "£"
+    },
+    "GBP": {
+        "name": "Libra",
+        "code": "£"
+    },
+    "GEL": {
+        "name": "Lari",
+        "code": "ლ"
+    },
+    "GHS": {
+        "name": "Cedi",
+        "code": "₵"
+    },
+    "GIP": {
+        "name": "Libra",
+        "code": "£"
+    },
+    "GMD": {
+        "name": "Dalasi",
+        "code": "D"
+    },
+    "GNF": {
+        "name": "Franco",
+        "code": "₣"
+    },
+    "GTQ": {
+        "name": "Quetzal",
+        "code": "Q"
+    },
+    "GYD": {
+        "name": "Dólar",
+        "code": "$"
+    },
+    "HKD": {
+        "name": "Dólar",
+        "code": "$"
+    },
+    "HNL": {
+        "name": "Lempira",
+        "code": "L"
+    },
+    "HRK": {
+        "name": "Kuna",
+        "code": "Kn"
+    },
+    "HTG": {
+        "name": "Gourde",
+        "code": "G"
+    },
+    "HUF": {
+        "name": "Forint",
+        "code": "Ft"
+    },
+    "IDR": {
+        "name": "Rupia",
+        "code": "Rp"
+    },
+    "ILS": {
+        "name": "Novo",
+        "code": "₪"
+    },
+    "INR": {
+        "name": "Rupia",
+        "code": "₹"
+    },
+    "IQD": {
+        "name": "Dinar",
+        "code": "ع.د"
+    },
+    "IRR": {
+        "name": "Rial",
+        "code": "﷼"
+    },
+    "ISK": {
+        "name": "Coroa",
+        "code": "Kr"
+    },
+    "JMD": {
+        "name": "Dólar",
+        "code": "$"
+    },
+    "JOD": {
+        "name": "Dinar",
+        "code": "د.ا"
+    },
+    "JPY": {
+        "name": "Yen",
+        "code": "¥"
+    },
+    "KES": {
+        "name": "Shilling",
+        "code": "Sh"
+    },
+    "KPW": {
+        "name": "Won",
+        "code": "₩"
+    },
+    "KRW": {
+        "name": "Won",
+        "code": "₩"
+    },
+    "KWD": {
+        "name": "Dinar",
+        "code": "د.ك"
+    },
+    "KYD": {
+        "name": "Dólar",
+        "code": "$"
+    },
+    "KZT": {
+        "name": "Tenge",
+        "code": "〒"
+    },
+    "LAK": {
+        "name": "Kip",
+        "code": "₭"
+    },
+    "LBP": {
+        "name": "Libra",
+        "code": "ل.ل"
+    },
+    "LKR": {
+        "name": "Rupia",
+        "code": "Rs"
+    },
+    "LRD": {
+        "name": "Dólar",
+        "code": "$"
+    },
+    "LSL": {
+        "name": "Loti",
+        "code": "L"
+    },
+    "LYD": {
+        "name": "Dinar",
+        "code": "ل.د"
+    },
+    "MAD": {
+        "name": "Dirham",
+        "code": "د.م."
+    },
+    "MDL": {
+        "name": "Leu",
+        "code": "L"
+    },
+    "MGA": {
+        "name": "Malgaxe",
+        "code": "969"
+    },
+    "MKD": {
+        "name": "Denar",
+        "code": "ден"
+    },
+    "MMK": {
+        "name": "Kyat",
+        "code": "K"
+    },
+    "MNT": {
+        "name": "Tugrik",
+        "code": "₮"
+    },
+    "MOP": {
+        "name": "Pataca",
+        "code": "P"
+    },
+    "MRU": {
+        "name": "Ouguiya",
+        "code": "UM"
+    },
+    "MUR": {
+        "name": "Rupia",
+        "code": "₨"
+    },
+    "MVR": {
+        "name": "Rufiyaa",
+        "code": "ރ."
+    },
+    "MWK": {
+        "name": "Kwacha",
+        "code": "MK"
+    },
+    "MXN": {
+        "name": "Peso",
+        "code": "$"
+    },
+    "MYR": {
+        "name": "Ringgit",
+        "code": "RM"
+    },
+    "MZN": {
+        "name": "Metical",
+        "code": "MTn"
+    },
+    "NAD": {
+        "name": "Dólar",
+        "code": "$"
+    },
+    "NGN": {
+        "name": "Naira",
+        "code": "₦"
+    },
+    "NIO": {
+        "name": "Oro",
+        "code": "C$"
+    },
+    "NOK": {
+        "name": "Coroa",
+        "code": "kr"
+    },
+    "NPR": {
+        "name": "Rupia",
+        "code": "₨"
+    },
+    "NZD": {
+        "name": "Dólar",
+        "code": "$"
+    },
+    "OMR": {
+        "name": "Rial",
+        "code": "ر.ع."
+    },
+    "PAB": {
+        "name": "Balboa",
+        "code": "B/."
+    },
+    "PEN": {
+        "name": "Novo",
+        "code": "S/."
+    },
+    "PGK": {
+        "name": "Kina",
+        "code": "K"
+    },
+    "PHP": {
+        "name": "Peso",
+        "code": "₱"
+    },
+    "PKR": {
+        "name": "Rupia",
+        "code": "₨"
+    },
+    "PLN": {
+        "name": "PZloty",
+        "code": "zł"
+    },
+    "PYG": {
+        "name": "Guarani",
+        "code": "₲"
+    },
+    "QAR": {
+        "name": "Qatari",
+        "code": "ر.ق"
+    },
+    "RON": {
+        "name": "Leu",
+        "code": "L"
+    },
+    "RSD": {
+        "name": "Dinar",
+        "code": "din"
+    },
+    "RUB": {
+        "name": "Rublo",
+        "code": "р."
+    },
+    "RWF": {
+        "name": "Franco",
+        "code": "₣"
+    },
+    "SAR": {
+        "name": "Riyal",
+        "code": "ر.س"
+    },
+    "SBD": {
+        "name": "Dólar",
+        "code": "$"
+    },
+    "SCR": {
+        "name": "Rúpia",
+        "code": "₨"
+    },
+    "SDG": {
+        "name": "Libra",
+        "code": "£"
+    },
+    "SEK": {
+        "name": "Coroa",
+        "code": "kr"
+    },
+    "SGD": {
+        "name": "Dólar",
+        "code": "$"
+    },
+    "SHP": {
+        "name": "Libra",
+        "code": "£"
+    },
+    "SLL": {
+        "name": "Leone",
+        "code": "Le"
+    },
+    "SOS": {
+        "name": "Shilling",
+        "code": "Sh"
+    },
+    "SRD": {
+        "name": "Dólar",
+        "code": "$"
+    },
+    "STN": {
+        "name": "Dobra",
+        "code": "Db"
+    },
+    "SYP": {
+        "name": "Libra",
+        "code": "ل.س"
+    },
+    "SZL": {
+        "name": "Lilangeni",
+        "code": "L"
+    },
+    "THB": {
+        "name": "Baht",
+        "code": "฿"
+    },
+    "TJS": {
+        "name": "Somoni",
+        "code": "ЅМ"
+    },
+    "TMT": {
+        "name": "Manat",
+        "code": "m"
+    },
+    "TND": {
+        "name": "Dinar",
+        "code": "د.ت"
+    },
+    "TOP": {
+        "name": "Pa’anga",
+        "code": "T$"
+    },
+    "TRY": {
+        "name": "Lira",
+        "code": "₤"
+    },
+    "TTD": {
+        "name": "Dólar",
+        "code": "$"
+    },
+    "TWD": {
+        "name": "Dólar",
+        "code": "$"
+    },
+    "TZS": {
+        "name": "Shilling",
+        "code": "Sh"
+    },
+    "UAH": {
+        "name": "Hryvnia",
+        "code": "₴"
+    },
+    "UGX": {
+        "name": "Shilling",
+        "code": "Sh"
+    },
+    "USD": {
+        "name": "Dólar",
+        "code": "$"
+    },
+    "UYU": {
+        "name": "Peso",
+        "code": "$"
+    },
+    "UZS": {
+        "name": "Uzbequistão",
+        "code": "860"
+    },
+    "VEF": {
+        "name": "937",
+        "code": "Bs"
+    },
+    "VND": {
+        "name": "Dong",
+        "code": "₫"
+    },
+    "VUV": {
+        "name": "Vatu",
+        "code": "Vt"
+    },
+    "WST": {
+        "name": "Tala",
+        "code": "T"
+    },
+    "XAF": {
+        "name": "Franco",
+        "code": "₣"
+    },
+    "XCD": {
+        "name": "Dólar",
+        "code": "$"
+    },
+    "XPF": {
+        "name": "Franco",
+        "code": "₣"
+    },
+    "YER": {
+        "name": "Rial",
+        "code": "﷼"
+    },
+    "ZAR": {
+        "name": "Rand",
+        "code": "R"
+    },
+    "ZMW": {
+        "name": "Kwacha",
+        "code": "ZK"
+    },
+    "ZWL": {
+        "name": "Dólar",
+        "code": "$"
+    }
+}

@@ -1,14 +1,24 @@
 import json
 import tkinter as tk
 from cryptomonitor.coingecko import CoinGecko
-from tkinter import ANCHOR, Label, ttk
-from tkinter.scrolledtext import ScrolledText
+
 
 cg = CoinGecko()
 
 f = open('coins_list.json', 'r')
 coin_json = json.load(f)
 f.close()
+
+file = open('fiat_codes.json', 'r')
+data = json.load(file)
+fiats = data['codes']
+cur_fiat = data['cur']
+file.close()
+
+file = open('t.json', 'r')
+fiat_symbol = json.load(file)[cur_fiat]['code']
+file.close()
+print(fiat_symbol)
 
 coins_id_key = {coin['id']: coin for coin in coin_json}
 coins_name_key = {coin['name']: coin for coin in coin_json}
@@ -20,7 +30,6 @@ class ProfitWindow:
         
         self.wallet = wallet
         self.coin_name = coin_name_or_id
-
         self.holding = self.get_holdint_and_net_cost()[0]
         self.net_cost = self.get_holdint_and_net_cost()[1]
         self.mkt_value = self.get_mkt_value()
@@ -38,47 +47,49 @@ class ProfitWindow:
         self.newWindow.grid_columnconfigure(1, weight=1)
         self.newWindow.grid_columnconfigure(2, weight=1)
 
+
+
         # ROW 0 +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-        coin_title = tk.Label(self.newWindow, text=coin_name_or_id)\
-        .grid(row=0, column=0, columnspan=3, sticky='nsew')
+        tk.Label(self.newWindow, text=coin_name_or_id)\
+        .grid(row=0, column=0, columnspan=2, sticky='nsew')
 
         # ROW 1 +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
         fg = self.positive_and_negative_color(self.time_profit)
-        coin_all_time_profit = tk.Label(self.newWindow, text=f'Lucro total: ${self.time_profit:.2f}', fg=fg)\
+        tk.Label(self.newWindow, text=f'Lucro total: ${self.time_profit:.2f}', fg=fg)\
         .grid(row=1, column=0, columnspan=3, sticky='nsew')
 
         # ROW 2 +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-        label = tk.Label(self.newWindow, text='Holding')\
+        tk.Label(self.newWindow, text='Holding')\
         .grid(row=2, column=0, columnspan=1, sticky='nsew')
-        label = tk.Label(self.newWindow, text='Valor de mercado')\
+        tk.Label(self.newWindow, text='Valor de mercado')\
         .grid(row=2, column=1, columnspan=1, sticky='nsew')
-        label = tk.Label(self.newWindow, text='Valor de aquisicao')\
+        tk.Label(self.newWindow, text='Valor de aquisicao')\
         .grid(row=2, column=2, columnspan=1, sticky='nsew')
 
         # ROW 3 +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-        holdings = tk.Label(self.newWindow, text=f'{self.holding:.8f}')\
+        tk.Label(self.newWindow, text=f'{self.holding:.8f}')\
         .grid(row=3, column=0, columnspan=1, sticky='nsew', pady=(0, 10))
-        mkt_value = tk.Label(self.newWindow, text=f'${self.mkt_value:.2f}')\
+        tk.Label(self.newWindow, text=f'${self.mkt_value:.2f}')\
         .grid(row=3, column=1, columnspan=1, sticky='nsew', pady=(0, 10))
-        net_cost = tk.Label(self.newWindow, text=f'${self.net_cost:.2f}')\
+        tk.Label(self.newWindow, text=f'${self.net_cost:.2f}')\
         .grid(row=3, column=2, columnspan=1, sticky='nsew', pady=(0, 10))
 
         # ROW 4 +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-        label = tk.Label(self.newWindow, text='Valor medio de compra')\
+        tk.Label(self.newWindow, text='Valor medio de compra')\
         .grid(row=4, column=0, columnspan=1, sticky='nsew')
-        label = tk.Label(self.newWindow, text='Valor medio de venda')\
+        tk.Label(self.newWindow, text='Valor medio de venda')\
         .grid(row=4, column=1, columnspan=1, sticky='nsew')
-        label = tk.Label(self.newWindow, text='Porcentagem de lucro')\
+        tk.Label(self.newWindow, text='Porcentagem de lucro')\
         .grid(row=4, column=2, columnspan=1, sticky='nsew')
 
         # ROW 5 +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-        av_buy_price = tk.Label(self.newWindow, text=f'${self.average_buy:.2f}')\
+        tk.Label(self.newWindow, text=f'${self.average_buy:.2f}')\
         .grid(row=5, column=0, columnspan=1, sticky='nsew')
-        av_sell_price = tk.Label(self.newWindow, text=f'${self.average_sell:.2f}')\
+        tk.Label(self.newWindow, text=f'${self.average_sell:.2f}')\
         .grid(row=5, column=1, columnspan=1, sticky='nsew')
 
         fg = self.positive_and_negative_color(self.delta)
-        av_delta = tk.Label(self.newWindow, text=f'${self.delta:.2f}%', fg=fg)\
+        tk.Label(self.newWindow, text=f'{self.delta:.2f}%', fg=fg)\
         .grid(row=5, column=2, columnspan=1, sticky='nsew')
 
         # ROW 6 +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
@@ -109,16 +120,16 @@ class ProfitWindow:
             space.grid(row=index, column=0)
             box.grid(row=index, column=1, columnspan=1, sticky='nsew', padx=(0, 0), pady=10)
 
-            l = tk.Label(box, text=f'Valor').grid(row=0, column=0, sticky='nsew', padx=padxLeft, pady=(5, 0))
-            l = tk.Label(box, text=f'Par').grid(row=0, column=1, sticky='nsew', padx=padxMiddle, pady=(5, 0))
-            l = tk.Label(box, text=f'Quantidade').grid(row=0, column=2, padx=padxRight, pady=(5, 0))
+            tk.Label(box, text=f'Valor').grid(row=0, column=0, sticky='nsew', padx=padxLeft, pady=(5, 0))
+            tk.Label(box, text=f'Par').grid(row=0, column=1, sticky='nsew', padx=padxMiddle, pady=(5, 0))
+            tk.Label(box, text=f'Quantidade').grid(row=0, column=2, padx=padxRight, pady=(5, 0))
 
-            l = tk.Label(box, text=f'${coin.value}').grid(row=1, column=0, padx=padxLeft, pady=(0, 5))
-            l = tk.Label(box, text=f'btc/usd').grid(row=1, column=1, padx=padxMiddle, pady=(0, 5))
-            l = tk.Label(box, text=f'{coin.amount:.8f}').grid(row=1, column=2, padx=padxRight, pady=(0, 5))
+            tk.Label(box, text=f'${coin.value}').grid(row=1, column=0, padx=padxLeft, pady=(0, 5))
+            tk.Label(box, text=f'btc/usd').grid(row=1, column=1, padx=padxMiddle, pady=(0, 5))
+            tk.Label(box, text=f'{coin.amount:.8f}').grid(row=1, column=2, padx=padxRight, pady=(0, 5))
 
-            l = tk.Label(box, text=f'Total').grid(row=2, column=1, padx=padxMiddle, pady=(5, 0))
-            l = tk.Label(box, text=f'${coin.amount*coin.value:.2f}').grid(row=3, column=1, padx=padxMiddle, pady=(0, 15))
+            tk.Label(box, text=f'Total').grid(row=2, column=1, padx=padxMiddle, pady=(5, 0))
+            tk.Label(box, text=f'${coin.amount*coin.value:.2f}').grid(row=3, column=1, padx=padxMiddle, pady=(0, 15))
 
     def wheel_move(self, canvas):
         def _on_mouse_wheel_down(_):
@@ -159,16 +170,26 @@ class ProfitWindow:
             else: 
                 sell_count+=1
                 sell_total+=coin.value
-                
-        return (buy_total/buy_count, sell_total/sell_count)
+        
+        if buy_count: buy_average = buy_total/buy_count
+        else: buy_average = 0
+
+        if sell_count: sell_average = sell_total/sell_count
+        else: sell_average = 0
+
+        return (buy_average, sell_average)
 
     def get_delta(self, avg_sell, avg_buy):
-        return (avg_sell/avg_buy)*100-100
+        if not avg_buy or not avg_sell: avg = 0
+        else: avg = (avg_sell/avg_buy)*100-100
+        return avg
 
     def positive_and_negative_color(self, value):
         if value > 0: return 'green'
         elif value < 0: return 'red'
         else: return None
+
+
 
 
 
