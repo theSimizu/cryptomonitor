@@ -11,14 +11,13 @@ f.close()
 
 file = open('fiat_codes.json', 'r')
 data = json.load(file)
-fiats = data['codes']
+fiats_list = data['codes']
 cur_fiat = data['cur']
 file.close()
 
 file = open('t.json', 'r')
 fiat_symbol = json.load(file)[cur_fiat]['code']
 file.close()
-print(fiat_symbol)
 
 coins_id_key = {coin['id']: coin for coin in coin_json}
 coins_name_key = {coin['name']: coin for coin in coin_json}

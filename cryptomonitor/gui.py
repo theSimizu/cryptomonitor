@@ -3,7 +3,7 @@ import tkinter as tk
 import numpy as np
 import requests
 from datetime import datetime
-from cryptomonitor.profit_window import ProfitWindow, coins_name_key, coins_id_key, cg, cur_fiat, fiat_symbol, fiats
+from cryptomonitor.profit_window import ProfitWindow, coins_name_key, coins_id_key, cg, fiat_symbol, fiats_list, cur_fiat
 from tkinter import ANCHOR, ttk
 from cryptomonitor.wallets import Wallet
 
@@ -17,7 +17,16 @@ wallets = Wallet().get_all_wallets()
 wallets_names = list(wallet.name for wallet in wallets)
 
 cur_wallet = None
+cur_pair = cur_fiat
 
+
+file = open('fiats.json', 'r')
+data = json.load(file)
+if cur_fiat == 'USD': fiat_multiplier = 1
+else: fiat_multiplier = float(data[f'USD{cur_fiat}']['bid'])
+if cur_pair == 'USD': pair_multiplier = 1
+else: pair_multiplier = float(data[f'USD{cur_pair}']['bid'])
+file.close()
 
 
 columns = ('coin', 'amount', 'value', 'total')
@@ -86,22 +95,23 @@ def fill_wallet_items_tree_view(_):
     coins = sorted(coins, key=lambda x: x[1]*coins_id_key[x[0]]['current_price'], reverse=True)
     for coin in coins: 
         coin_id = coin[0]
-        value = coins_id_key[coin_id]['current_price']
+        value = coins_id_key[coin_id]['current_price']*fiat_multiplier
+
         old_transactions_tree_view.insert('', 'end',
                                         values=(
                                             coins_id_key[coin_id]['name'], 
                                             str(f'{coin[1]:.8f}'), 
-                                            str(f'{value:.2f}'), 
-                                            str(f'{coin[1]*value:.2f}')
+                                            str(f'{(value):.2f}'), 
+                                            str(f'{(coin[1]*value):.2f}')
                                         )
         )
 
     wallets_listbox.grid_remove()
 
-def fill_coin_items_tree_view(_):
+def fill_coin_value(_):
     val = _fill_entry(coins_listbox, coins_entry)
     value_entry.delete(0, 'end')
-    value_entry.insert(0, _sn_format(coins_name_key[val]['current_price']))
+    value_entry.insert(0, f"{coins_name_key[val]['current_price']*pair_multiplier:.2f}")
     coins_listbox.grid_remove()
 
 def color_radio_button():
@@ -123,6 +133,7 @@ def add_to_treeview(_):
     value = value_entry.get()
 
     if _add_errors(coin, amount, value, var_transaction.get()): return
+    value = f'{float(value)/pair_multiplier:.2f}'
 
     coins_entry.delete(0, 'end')
     amount_entry.delete(0, 'end')
@@ -164,8 +175,19 @@ def coin_profit_data(_):
     coin = values[0]
     pw = ProfitWindow(app, cur_wallet, coin)
 
+def update_fiat_multiplier():
+    global fiat_multiplier, pair_multiplier
+    file = open('fiats.json', 'r')
+    data = json.load(file)
+    file.close()
+
+    if cur_fiat == 'USD': fiat_multiplier = 1
+    else: fiat_multiplier = float(data[f'USD{cur_fiat}']['bid'])
+    if cur_pair == 'USD': pair_multiplier = 1
+    else: pair_multiplier = float(data[f'USD{cur_pair}']['bid'])
+    
 def update_fiats():
-    param = tuple(f'usd-{f}' for f in fiats)
+    param = tuple(f'usd-{f}' for f in fiats_list)
     p = ','.join(param)
     r = requests.get(f'https://economia.awesomeapi.com.br/json/last/{p}')
     with open('fiats.json', 'w') as file:
@@ -173,6 +195,42 @@ def update_fiats():
         data['time'] = datetime.timestamp(datetime.utcnow())
         json.dump(data, file)
 
+def update_cur_fiat(event):
+    global cur_fiat
+    value = event.widget.get()
+    cur_fiat = value
+
+    file = open('fiat_codes.json', 'r')
+    data = json.load(file)
+    data['cur'] = value
+    file.close()
+
+    file = open('fiat_codes.json', 'w')
+    json.dump(data, file)
+    file.close()
+
+    file = open('t.json', 'r')
+    fiat_symbol = json.load(file)[cur_fiat]['code']
+    file.close()
+
+    old_transactions_tree_view.heading("value", text=f"Valor({fiat_symbol})")
+    old_transactions_tree_view.heading("total", text=f"Total({fiat_symbol})")
+    update_fiat_multiplier()
+    fill_wallet_items_tree_view('')
+
+def update_cur_pair(event):
+    global cur_pair
+    value = event.widget.get()
+    cur_pair = value
+    file = open('t.json', 'r')
+    fiat_symbol = json.load(file)[cur_pair]['code']
+    file.close()
+
+    value_label['text'] = f'Valor({fiat_symbol})'
+    update_fiat_multiplier()
+
+    if coins_entry.get() in coins_name_key:
+        fill_coin_value('')
     
 
 ################################################ APP ################################################
@@ -307,8 +365,8 @@ tk.Label(text='Par: ', font=('Arial', 13))\
 tk.Label(text='Quantidade: ', font=('Arial', 13))\
 .grid(row=row, column=0, columnspan=2, sticky='ns', padx=(0, 65), pady=0)
 
-tk.Label(text='Valor: ', font=('Arial', 13))\
-.grid(row=row, column=0, columnspan=2, sticky='nse', padx=(0, 170), pady=0)
+value_label = tk.Label(text=f'Valor({fiat_symbol})', font=('Arial', 13))
+value_label.grid(row=row, column=0, columnspan=2, sticky='nse', padx=(0, 145), pady=0)
 #================================================================================================================
 
 #++++++++++++++++++++++++++++++++++++++++++++++++++++ROW 7++++++++++++++++++++++++++++++++++++++++++++++++++++
@@ -322,12 +380,11 @@ coins_entry.bind('<KeyRelease>', check_coin_entry)
 coins_entry.bind('<Button-1>', show_coins_listbox)
 #==================================================================================================================
 
-# Coin name entry ================================================================================================
-pair = ttk.Combobox(values=fiats, width=8, state="readonly") #ttk.Entry(width=8)
+# Pair Combobox ================================================================================================
+pair = ttk.Combobox(values=fiats_list, width=8, state="readonly") #ttk.Entry(width=8)
 pair.current(0)
+pair.bind('<<ComboboxSelected>>', update_cur_pair)
 pair.grid(row=row, column=0, columnspan=1, sticky='ns', padx=(100, 0), pady=0)
-# pair.bind('<KeyRelease>', check_coin_entry)
-# pair.bind('<Button-1>', show_coins_listbox)
 #==================================================================================================================
 
 
@@ -351,7 +408,7 @@ coin_lb_row = row
 
 # Coins listbox =====================================================================================================
 coins_listbox = tk.Listbox(height=4, width=28)
-coins_listbox.bind("<<ListboxSelect>>", fill_coin_items_tree_view)
+coins_listbox.bind("<<ListboxSelect>>", fill_coin_value)
 for name in coins_name_key:
     coins_listbox.insert('end', name)
 
@@ -382,7 +439,7 @@ new_transactions_tree_view.heading("coin", text="Moeda")
 new_transactions_tree_view.column("amount", anchor=tk.CENTER, stretch=tk.NO, width=275)
 new_transactions_tree_view.heading("amount", text="Quantidade")
 new_transactions_tree_view.column("value",anchor=tk.CENTER, stretch=tk.NO, width=200)
-new_transactions_tree_view.heading("value", text=f"Valor({fiat_symbol})")
+new_transactions_tree_view.heading("value", text=f"Valor($)")
 
 scrollbar = ttk.Scrollbar(orient=tk.VERTICAL, command=new_transactions_tree_view.yview)
 new_transactions_tree_view.configure(yscroll=scrollbar.set)
@@ -403,11 +460,12 @@ save_button.bind('<Button-1>', save_transactions)
 
 #+++++++++++++++++++++++++++++++++++++++++++++++++++++ROW 11++++++++++++++++++++++++++++++++++++++++++++++++++++
 row+=1
-# fiat_entry = tk.Entry(width=10, justify='center')
-# fiat_entry.insert(0, cur_fiat)
-fiat_entry = ttk.Combobox(values=fiats, width=8, state="readonly")
-fiat_entry.grid(row=row, column=0, sticky='nsw', padx=(50, 0), pady=0)
-fiat_entry.current(0)
+
+fiat_combobox = ttk.Combobox(values=fiats_list, width=8, state="readonly")
+fiat_combobox.grid(row=row, column=0, sticky='nsw', padx=(50, 0), pady=0)
+index = fiats_list.index(cur_fiat)
+fiat_combobox.current(index)
+fiat_combobox.bind('<<ComboboxSelected>>', update_cur_fiat)
 
 
 
