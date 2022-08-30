@@ -72,8 +72,14 @@ class Wallets(Base):
         session.query(CryptoCurrencies).filter(CryptoCurrencies.wallet_id == self.id).delete(synchronize_session=False)
         session.commit()
 
-    def coin_transactions(self, coin):
-        return tuple(filter(lambda x: coin.lower() in (x.name.lower(), x.cg_id.lower()), self.coins))
+    def coin_transactions(self, coin_name):
+        return tuple(filter(lambda coin: coin_name.lower() in (coin.name.lower(), coin.cg_id.lower()), self.coins))
+
+    def remove_transaction(self, transaction):
+        session.query(CryptoCurrencies).filter(CryptoCurrencies.id == transaction.id).delete(synchronize_session=False)
+        session.commit()
+
+
         
 
 
